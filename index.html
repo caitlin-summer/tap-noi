@@ -1,0 +1,663 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Bé Tập Nói</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito:wght@500;700&display=swap">
+<style>
+/* Layout: một màn hình một việc. Nhóm từ -> thẻ lớn (hình + từ + giọng đọc chậm) -> trò chọn hình.
+   Màu dịu, không trắng chói, không nhấp nháy. Dành cho bé 2 tuổi, bố mẹ ngồi cùng. */
+:root{
+  --f-display:'Baloo 2','Nunito',ui-rounded,'Arial Rounded MT Bold',system-ui,sans-serif;
+  --f-body:'Nunito',ui-rounded,system-ui,sans-serif;
+  --bg:#dde7d9; --surface:#ebf0e5; --ink:#2b3a33; --muted:#566860; --line:#bccab8;
+  --accent:#3f6f5b; --accent-ink:#f1f6ee; --focus:#2d5fa3;
+  --t-fam:#efd1cb; --t-snd:#f1e0b0; --t-ani:#d3e3c0; --t-food:#f2cfb0; --t-thing:#cbdbe8; --t-body:#e0cfe6; --t-act:#c9e8df; --t-home:#dcd8c8; --t-own:#e9d3bf;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1e2823; --surface:#27332d; --ink:#e2eadf; --muted:#a6b8ac; --line:#3b4b43;
+  --accent:#8dc2a9; --accent-ink:#14201a; --focus:#8db6e8;
+  --t-fam:#584240; --t-snd:#585135; --t-ani:#3e5137; --t-food:#5a4533; --t-thing:#37485a; --t-body:#4c3f56; --t-act:#34544c; --t-home:#4a4a40; --t-own:#54453a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1e2823; --surface:#27332d; --ink:#e2eadf; --muted:#a6b8ac; --line:#3b4b43;
+  --accent:#8dc2a9; --accent-ink:#14201a; --focus:#8db6e8;
+  --t-fam:#584240; --t-snd:#585135; --t-ani:#3e5137; --t-food:#5a4533; --t-thing:#37485a; --t-body:#4c3f56; --t-act:#34544c; --t-home:#4a4a40; --t-own:#54453a; color-scheme:dark}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.4;
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-user-select:none;user-select:none;overscroll-behavior:none}
+#app{height:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;min-height:0}
+.view{flex:1;display:flex;flex-direction:column;min-height:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.emo{font-family:'Apple Color Emoji','Noto Color Emoji','Segoe UI Emoji',sans-serif;line-height:1}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;flex:none}
+.top h1{margin:0;font:700 30px/1.1 var(--f-display)}
+.ctitle{font:700 22px/1.1 var(--f-display);text-align:center;flex:1}
+.parent{position:relative;overflow:hidden;border:0;background:transparent;color:var(--muted);font:700 13px var(--f-body);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;border-radius:12px;touch-action:manipulation}
+.parent svg{width:22px;height:22px}
+.hold::after{content:"";position:absolute;left:0;bottom:0;height:4px;width:0;background:var(--accent)}
+.hold.holding::after{width:100%;transition:width var(--hold,1.2s) linear}
+.round{flex:none;width:56px;height:56px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);display:grid;place-items:center;touch-action:manipulation}
+.round svg{width:28px;height:28px}
+.round.big{width:96px;height:96px;background:var(--accent);color:var(--accent-ink)}
+.round.big svg{width:44px;height:44px}
+.round:active,.cat:active,.opt:active{transform:scale(.96)}
+
+/* trang chủ */
+.grid{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:min-content;gap:12px;padding:4px 0 12px;align-content:start}
+.cat{min-height:132px;border:0;border-radius:28px;background:var(--tint);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;touch-action:manipulation}
+.cat .e{width:68px;height:68px;display:block}
+.cat .e svg,.art svg{width:100%;height:100%;display:block}
+.art{width:100%;height:100%;display:grid;place-items:center;padding:4%}
+.cat .n{font:700 21px/1.1 var(--f-display);text-align:center}
+.cat.quiz{grid-column:1/-1;flex-direction:row;min-height:84px;gap:14px;background:var(--surface);box-shadow:inset 0 0 0 3px var(--accent)}
+.cat.quiz .e{width:48px;height:48px}
+
+/* thẻ học */
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;touch-action:pan-y;cursor:pointer}
+.pic{width:min(88%,44dvh,380px);aspect-ratio:1;border-radius:40px;background:var(--tint,var(--t-own));display:grid;place-items:center;overflow:hidden;container-type:inline-size}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.word{font:700 clamp(44px,15vw,76px)/1.05 var(--f-display);text-align:center;text-wrap:balance;margin-top:6px}
+.phrase{min-height:0}
+.status{display:flex;align-items:center;justify-content:center;gap:10px;height:28px;font:700 16px var(--f-body);color:var(--muted)}
+.bar{width:90px;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transform-origin:left;transform:scaleX(0)}
+.bar.run i{animation:fill var(--w,3s) linear forwards}
+@keyframes fill{to{transform:scaleX(1)}}
+.dots{flex:none;display:flex;justify-content:center;gap:8px;min-height:14px;color:var(--muted);font-weight:700}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.ctrl{flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 8px 8px}
+
+/* chọn hình */
+.qwrap{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%}
+.opt{aspect-ratio:1;border-radius:32px;border:4px solid transparent;background:var(--tint,var(--t-own));display:grid;place-items:center;padding:0;overflow:hidden;container-type:inline-size;touch-action:manipulation}
+.opt img{width:100%;height:100%;object-fit:cover;display:block}
+.opt.ok{border-color:var(--accent);animation:pop .45s}
+.opt.no{animation:shake .4s}
+@keyframes pop{40%{transform:scale(1.05)}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* bảng bố mẹ */
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(15,25,20,.5);display:flex;align-items:flex-end;justify-content:center}
+.panel{width:100%;max-width:520px;max-height:88dvh;overflow:auto;background:var(--surface);border-radius:24px 24px 0 0;
+  padding:18px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px));-webkit-user-select:text;user-select:text}
+.panel h2{margin:0 0 4px;font:700 24px/1.2 var(--f-display)}
+.panel h3{margin:18px 0 2px;font:700 17px/1.3 var(--f-display)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.row>label,.row>span{font-weight:700}
+.row small,.note{display:block;color:var(--muted);font-weight:500;font-size:14px;line-height:1.4}
+.seg{display:flex;border:2px solid var(--line);border-radius:12px;overflow:hidden;flex:none}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:40px;font:700 15px var(--f-body)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.btn{min-height:44px;padding:10px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);font:700 15px var(--f-body)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+input[type=text],select{width:100%;min-height:44px;padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:600 16px var(--f-body)}
+details.note{margin:8px 0}
+details summary{font-weight:700;color:var(--ink);cursor:pointer;min-height:36px;display:flex;align-items:center}
+details p{margin:6px 0}
+input[type=checkbox]{width:26px;height:26px;accent-color:var(--accent)}
+.fld{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.msg{min-height:22px;margin:10px 0 0;font-weight:700;color:var(--accent)}
+.msg.err{color:#b4483a}
+@media (prefers-color-scheme:dark){.msg.err{color:#f0a090}}
+
+/* nghỉ mắt */
+.rest{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px}
+.rest svg{width:96px;height:96px;color:var(--accent)}
+.rest h2{margin:0;font:700 34px/1.15 var(--f-display)}
+.rest p{margin:0;font-size:18px;color:var(--muted);max-width:30ch}
+.rest .btn{margin-top:12px;position:relative;overflow:hidden}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app">
+  <!-- TRANG CHỦ -->
+  <section class="view" id="vHome">
+    <header class="top">
+      <h1>Bé Tập Nói</h1>
+      <button class="parent hold" data-hold aria-label="Dành cho bố mẹ. Giữ một giây để mở."><span data-ic="gear"></span><span>Bố mẹ</span></button>
+    </header>
+    <div class="grid" id="catGrid"></div>
+  </section>
+
+  <!-- THẺ HỌC -->
+  <section class="view" id="vCard" hidden>
+    <header class="top">
+      <button class="round" data-back aria-label="Về trang chủ"><span data-ic="back"></span></button>
+      <div class="ctitle" id="cTitle"></div>
+      <button class="parent hold" data-hold aria-label="Dành cho bố mẹ. Giữ một giây để mở."><span data-ic="gear"></span><span>Bố mẹ</span></button>
+    </header>
+    <div class="stage" id="stage">
+      <div class="pic" id="pic"></div>
+      <div class="word" id="word"></div>
+      <div class="phrase" id="phrase"></div>
+      <div class="status"><span id="stText"></span><span class="bar" id="bar" hidden><i></i></span></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <nav class="ctrl">
+      <button class="round" id="bPrev" aria-label="Thẻ trước"><span data-ic="back"></span></button>
+      <button class="round big" id="bSay" aria-label="Nghe lại"><span data-ic="speaker"></span></button>
+      <button class="round" id="bNext" aria-label="Thẻ sau"><span data-ic="next"></span></button>
+    </nav>
+  </section>
+
+  <!-- CHỌN HÌNH -->
+  <section class="view" id="vQuiz" hidden>
+    <header class="top">
+      <button class="round" data-back aria-label="Về trang chủ"><span data-ic="back"></span></button>
+      <div class="ctitle">Chọn hình</div>
+      <button class="parent hold" data-hold aria-label="Dành cho bố mẹ. Giữ một giây để mở."><span data-ic="gear"></span><span>Bố mẹ</span></button>
+    </header>
+    <div class="qwrap">
+      <button class="round big" id="qSay" aria-label="Nghe lại"><span data-ic="speaker"></span></button>
+      <div class="word" id="qWord"></div>
+      <div class="status" id="qStatus"></div>
+      <div class="qgrid" id="qGrid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- BẢNG DÀNH CHO BỐ MẸ -->
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="shTitle">
+  <div class="panel">
+    <h2 id="shTitle">Dành cho bố mẹ</h2>
+    <p class="note">Cài đặt chỉ lưu trên điện thoại này.</p>
+
+    <div id="cardTools" hidden>
+      <h3 id="ctName"></h3>
+      <p class="note">Ảnh thật của người thân và giọng của bố mẹ thường giúp bé chú ý hơn giọng máy.</p>
+      <div class="btns">
+        <button class="btn" id="btnImg">Dùng ảnh thật</button>
+        <button class="btn" id="btnImgDel" hidden>Bỏ ảnh riêng</button>
+        <button class="btn" id="btnAud">Thu giọng bố mẹ</button>
+        <button class="btn" id="btnAudDel" hidden>Bỏ giọng riêng</button>
+        <button class="btn" id="btnCardDel" hidden>Xóa thẻ này</button>
+      </div>
+      <p class="note">Thu giọng: máy sẽ mở ứng dụng ghi âm, thu một từ dưới 10 giây. Nếu máy không mở ghi âm, hãy chọn một file âm thanh đã có.</p>
+    </div>
+
+    <h3>Cách đọc</h3>
+    <div class="row"><span>Tốc độ đọc<small>Chậm giúp bé nghe rõ từng âm.</small></span>
+      <div class="seg" id="segRate"><button data-v="0.6">Rất chậm</button><button data-v="0.75">Chậm</button><button data-v="0.95">Vừa</button></div></div>
+    <div class="row"><span>Chờ bé nói theo<small>Máy dừng lại để bé thử nói</small></span>
+      <div class="seg" id="segWait"><button data-v="0">Không</button><button data-v="3">3 giây</button><button data-v="5">5 giây</button></div></div>
+    <div class="row"><label for="chAuto">Tự đọc khi mở thẻ</label><input type="checkbox" id="chAuto"></div>
+    <div class="row"><span>Nhắc nghỉ mắt<small>Màn hình tạm khóa để bé nghỉ</small></span>
+      <div class="seg" id="segRest"><button data-v="0">Tắt</button><button data-v="10">10 phút</button><button data-v="15">15 phút</button></div></div>
+
+    <h3>Giọng đọc tiếng Việt</h3>
+    <p class="note" id="voiceInfo"></p>
+    <details class="note">
+      <summary>Cách có giọng đọc tự nhiên hơn</summary>
+      <p><b>iPhone:</b> vào Cài đặt, Trợ năng, Nội dung được đọc, Giọng nói, chọn Tiếng Việt, ưu tiên giọng nữ (Linh) rồi tải bản Nâng cao.</p>
+      <p><b>Android:</b> vào Cài đặt, tìm "Chuyển văn bản thành giọng nói", chọn bộ máy của Google và tải dữ liệu giọng Tiếng Việt chất lượng cao.</p>
+      <p><b>Máy tính:</b> dùng Microsoft Edge, giọng HoaiMy (Natural) đọc tiếng Việt tự nhiên nhất.</p>
+      <p>Sau khi cài, mở lại trang này rồi bấm "Nghe thử". Tên menu có thể khác tùy máy.</p>
+      <p>Cách tự nhiên nhất vẫn là giọng bố mẹ: mở một thẻ, bấm "Thu giọng bố mẹ".</p>
+    </details>
+    <div class="fld" id="voiceFld" hidden><select id="voiceSel" aria-label="Chọn giọng đọc"></select></div>
+    <div class="btns"><button class="btn" id="btnTest">Nghe thử</button></div>
+
+    <h3>Thêm thẻ của nhà mình</h3>
+    <p class="note">Mỗi thẻ một tiếng thôi nhé. Ví dụ: ba, bé, bà, mèo.</p>
+    <div class="fld">
+      <input type="text" id="newWord" maxlength="10" placeholder="Một tiếng (ví dụ: ba)" autocomplete="off" aria-label="Từ mới">
+      <div class="btns"><button class="btn" id="btnNewImg">Chọn ảnh</button><button class="btn pri" id="btnNewAdd">Thêm thẻ</button></div>
+      <span class="note" id="newImgName">Chưa chọn ảnh</span>
+    </div>
+
+    <p class="msg" id="msg" role="status"></p>
+    <div class="btns"><button class="btn pri" id="btnClose">Xong</button></div>
+  </div>
+</div>
+
+<!-- NGHỈ MẮT -->
+<div class="rest" id="rest" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+  <h2>Nghỉ mắt một chút nhé</h2>
+  <p>Bé nhìn ra xa, hoặc chơi cùng bố mẹ. Lát nữa mình học tiếp.</p>
+  <button class="btn hold" id="restGo">Bố mẹ giữ để học tiếp</button>
+</div>
+
+<input type="file" id="fImg" accept="image/*" hidden>
+<input type="file" id="fNew" accept="image/*" hidden>
+<input type="file" id="fAud" accept="audio/*" capture hidden>
+
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ---------- icon ---------- */
+const IC={
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  next:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
+  speaker:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h4l5 4V5.5l-5 4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg>'
+};
+document.querySelectorAll('[data-ic]').forEach(e=>{e.innerHTML=IC[e.dataset.ic]||''});
+
+/* ---------- dữ liệu từ ---------- */
+/* ---------- tranh minh họa: hoạt hình phẳng, màu dịu, vẽ bằng SVG ---------- */
+const K='#3a2f3a',SK='#f3c9a5',SKD='#e3a883',PK='#ef8f8a',CR='#f6f1e8';
+const circ=(x,y,r,f,o='')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f}"${o}/>`;
+const el=(x,y,rx,ry,f,rot=0,o='')=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${f}"${rot?` transform="rotate(${rot} ${x} ${y})"`:''}${o}/>`;
+const pth=(d,f,o='')=>`<path d="${d}" fill="${f}"${o}/>`;
+const rect=(x,y,w,h,r,f,o='')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${f}"${o}/>`;
+const ln=(d,c,w=4,o='')=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${o}/>`;
+const eye=(x,y,r=5.5)=>circ(x,y,r,K)+circ(x+r*.35,y-r*.4,r*.34,'#fff');
+const eyeU=(x,y,w=9)=>ln(`M${x-w} ${y}q${w} ${-w} ${w*2} 0`,K,3.5);
+const eyeD=(x,y,w=9)=>ln(`M${x-w} ${y}q${w} ${w} ${w*2} 0`,K,3.5);
+const cheek=(x,y,r=8)=>el(x,y,r,r*.62,PK,0,' opacity=".55"');
+const smile=(x,y,w=10)=>ln(`M${x-w} ${y}q${w} ${w} ${w*2} 0`,K,3.5);
+const heart=(x,y,s,f)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M0 9C-16 -3 -11 -17 0 -9C11 -17 16 -3 0 9Z" fill="${f}"/>`;
+const bubble=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#7fb6d6" stroke-width="3"/>`;
+
+function person(o){
+  const baby=!!o.baby,hy=baby?100:88,rx=baby?46:40,ry=44,hc=o.hc||'#4a352c',L=100-rx,R=100+rx;
+  const body=pth(baby?'M58 200Q58 154 100 154Q142 154 142 200Z':'M34 200Q34 140 100 140Q166 140 166 200Z',o.top||PK);
+  let back='',front='';
+  if(o.hair==='long')back=pth('M50 92Q44 28 100 28Q156 28 150 92L156 158Q100 174 44 158Z',hc);
+  if(o.hair==='pig')back=circ(46,106,17,hc)+circ(154,106,17,hc);
+  if(o.hair==='bun')back=circ(100,hy-54,17,hc);
+  const fringe=`M${L+2} ${hy-6}Q${L} ${hy-52} 100 ${hy-52}Q${R} ${hy-52} ${R-2} ${hy-6}Q${R-12} ${hy-28} 100 ${hy-26}Q${L+12} ${hy-28} ${L+2} ${hy-6}Z`;
+  if(['long','pig','short','bun'].includes(o.hair))front=pth(fringe,hc);
+  if(o.hair==='sides')front=el(L+3,hy+2,9,18,hc)+el(R-3,hy+2,9,18,hc);
+  if(o.hair==='spiky')front=pth(`M${L+2} ${hy-6}L${L+2} ${hy-40}L${L+20} ${hy-30}L100 ${hy-54}L${R-20} ${hy-30}L${R-2} ${hy-40}L${R-2} ${hy-6}Q${R-12} ${hy-26} 100 ${hy-24}Q${L+12} ${hy-26} ${L+2} ${hy-6}Z`,hc);
+  if(o.hair==='tuft')front=ln(`M100 ${hy-42}q-12 -16 3 -24`,hc,6);
+  const vest=o.v?pth('M74 142L100 176L126 142Z',CR):'';
+  const face=eye(100-17,hy+4,5)+eye(100+17,hy+4,5)+smile(100,hy+20,10)+cheek(100-28,hy+16)+cheek(100+28,hy+16);
+  const gl=o.glasses?`<circle cx="${100-17}" cy="${hy+4}" r="13" fill="none" stroke="${K}" stroke-width="3"/><circle cx="${100+17}" cy="${hy+4}" r="13" fill="none" stroke="${K}" stroke-width="3"/>`+ln(`M${96} ${hy+4}h8`,K,3):'';
+  return back+body+vest+rect(90,hy+34,20,22,6,SK)+circ(L-2,hy+6,9,SK)+circ(R+2,hy+6,9,SK)+el(100,hy,rx,ry,SK)+front+face+gl;
+}
+function kidFace(o){
+  const e=o.eyes==='closed'?eyeD(84,92,8)+eyeD(116,92,8):o.eyes==='happy'?eyeU(84,94,8)+eyeU(116,94,8):eye(84,90,5)+eye(116,90,5);
+  const m=o.mouth==='open'?pth('M88 104Q100 126 112 104Z','#a63d4f')+el(100,115,6,4,PK):o.mouth==='kiss'?circ(100,108,6,'#e0626e'):o.mouth==='none'?'':smile(100,104,11);
+  return e+cheek(66,106)+cheek(134,106)+m;
+}
+function kid(o={}){
+  return pth('M44 200Q44 142 100 142Q156 142 156 200Z',o.top||'#5b9bd5')+rect(90,120,20,26,6,SK)+circ(58,88,9,SK)+circ(142,88,9,SK)+el(100,84,42,44,SK)+pth('M58 80Q54 34 100 34Q146 34 142 80Q130 56 100 58Q70 56 58 80Z','#5b3a2e')+kidFace(o);
+}
+
+const ART={};
+/* gia đình */
+ART.mom=person({hair:'long',hc:'#4a352c',top:'#ef8f8a'});
+ART.dad=person({hair:'short',hc:'#3a2f3a',top:'#b5835a'});
+ART.grandma=person({hair:'bun',hc:'#c9c9d1',top:'#d9c7ae',glasses:1});
+ART.grandpa=person({hair:'sides',hc:'#c9c9d1',top:'#f0a14a',glasses:1,v:1});
+ART.baby=person({baby:1,hair:'tuft',hc:'#6b4a2e',top:'#9fc7e8'});
+ART.brother=person({hair:'spiky',hc:'#2f2a33',top:'#5b9bd5'});
+ART.sister=person({hair:'pig',hc:'#5b3a2e',top:'#f2a65a'});
+/* con vật */
+ART.cat=pth('M40 84L50 22L98 58Z','#f2a65a')+pth('M160 84L150 22L102 58Z','#f2a65a')+pth('M54 70L58 40L84 58Z',PK)+pth('M146 70L142 40L116 58Z',PK)+el(100,112,64,54,'#f2a65a')+ln('M92 60q7 14 0 24M108 60q-7 14 0 24M100 56v24','#d9823a',5)+el(100,134,28,18,'#f8e7cf')+eye(76,108,6.5)+eye(124,108,6.5)+pth('M93 123h14l-7 8z','#e58e9a')+ln('M100 131q-7 9-15 4M100 131q7 9 15 4',K,3)+cheek(60,128)+cheek(140,128)+ln('M40 120h-20M42 132l-18 8M160 120h20M158 132l18 8','#8a6a55',3);
+ART.dog=el(40,104,20,40,'#8b5a3c',14)+el(160,104,20,40,'#8b5a3c',-14)+el(100,104,56,54,'#e8b87a')+el(124,94,19,21,'#a56d45')+el(100,132,36,26,'#f6ead6')+eye(78,96,6.5)+eye(124,96,6.5)+el(100,116,13,9,K)+ln('M100 124v10M100 134q-10 8-18 0M100 134q10 8 18 0',K,3.5)+pth('M92 138q8 22 16 0z','#ee8c98')+cheek(58,122)+cheek(142,122);
+ART.chick=ln('M84 170v14M72 188h24M116 170v14M104 188h24','#f0993a',5)+el(100,118,60,56,'#f7d559')+el(44,124,15,26,'#efbd3a',18)+el(156,124,15,26,'#efbd3a',-18)+el(100,146,34,22,'#fbe9a0')+circ(86,66,9,'#ef6f5a')+circ(100,60,11,'#ef6f5a')+circ(114,66,9,'#ef6f5a')+eye(80,104,6)+eye(120,104,6)+pth('M90 118h20l-10 16z','#f0993a')+cheek(64,122)+cheek(136,122);
+ART.rooster=el(46,92,14,40,'#3f8f7a',-35)+el(38,110,14,38,'#2f6fa3',-65)+el(54,76,13,36,'#e2b43a',-8)+ln('M86 168v18M110 168v18M76 188h20M100 188h20','#f0993a',5)+el(96,126,54,46,'#e8883f')+el(92,130,30,22,'#f1ae5b',-15)+circ(138,76,30,'#e8883f')+circ(126,46,9,'#e8444f')+circ(139,38,10,'#e8444f')+circ(152,46,9,'#e8444f')+pth('M162 70L188 80L162 90Z','#f6c244')+el(158,100,7,12,'#e8444f')+eye(146,70,5)+cheek(150,86,7);
+ART.duck=pth('M36 112Q22 100 16 88Q42 90 54 104Z','#f7d559')+el(92,128,60,42,'#f7d559')+el(86,132,34,22,'#efbd3a',-8)+circ(134,82,32,'#f7d559')+el(170,92,21,9,'#f0993a')+eye(142,74,5.5)+cheek(150,94,7)+pth('M20 166Q42 150 62 166T102 166T142 166T182 166V196H20Z','#8fc3dd');
+ART.cow=el(34,76,22,12,'#f6f1e8',-20)+el(166,76,22,12,'#f6f1e8',20)+el(34,76,12,6,PK,-20)+el(166,76,12,6,PK,20)+el(66,44,9,18,'#e9dcc0',-25)+el(134,44,9,18,'#e9dcc0',25)+el(100,100,58,62,'#f6f1e8')+el(70,66,24,20,'#4a4450',-25)+el(142,112,15,22,'#4a4450')+el(100,144,40,28,'#f2b3b0')+el(87,144,5,8,'#d98e8e')+el(113,144,5,8,'#d98e8e')+eye(76,98,6.5)+eye(124,98,6.5)+cheek(62,124,7)+cheek(138,124,7);
+ART.pig=pth('M46 82L52 36L92 58Z','#ee93a2')+pth('M154 82L148 36L108 58Z','#ee93a2')+el(100,108,62,56,'#f4a9b4')+el(100,130,30,22,'#f7bcc4')+el(90,130,5,8,'#d98896')+el(110,130,5,8,'#d98896')+eye(74,100,6.5)+eye(126,100,6.5)+cheek(56,122)+cheek(144,122);
+ART.fish=pth('M146 100L188 66Q180 100 188 134Z','#e6783f')+el(92,100,62,44,'#f0955a')+pth('M70 62Q90 38 114 58Z','#e6783f')+pth('M80 140Q98 162 118 140Z','#e6783f')+pth('M104 58Q118 100 104 142L120 142Q134 100 120 58Z',CR,' opacity=".8"')+circ(58,92,8,CR)+eye(58,92,5)+ln('M38 110q8 6 14 0',K,3)+bubble(26,58,8)+bubble(42,34,5);
+ART.bird=ln('M16 172H184','#8a6a3c',6)+ln('M92 148v22M112 148v22','#f0993a',4)+pth('M144 116L190 98L184 130Z','#4a86c0')+el(98,112,52,44,'#6fa8dc')+el(86,128,30,20,'#d7e6f2')+el(114,114,28,19,'#4a86c0',-22)+pth('M50 100L24 108L50 116Z','#f6c244')+eye(70,98,5.5)+cheek(74,114,7);
+ART.elephant=el(40,96,34,40,'#9fb2c6',-10)+el(160,96,34,40,'#9fb2c6',10)+el(40,98,20,28,'#f0b7b7',-10)+el(160,98,20,28,'#f0b7b7',10)+el(100,92,54,56,'#aebfd0')+ln('M100 114Q100 166 126 168','#aebfd0',34)+ln('M94 138h14M96 152h14','#93a6ba',3)+eye(78,84,6)+eye(122,84,6)+cheek(62,106)+cheek(138,106);
+ART.frog=el(100,124,64,46,'#7fc47a')+circ(66,74,24,'#7fc47a')+circ(134,74,24,'#7fc47a')+circ(66,72,15,CR)+circ(134,72,15,CR)+eye(68,74,8)+eye(132,74,8)+ln('M54 128Q100 170 146 128',K,4.5)+circ(92,106,3,'#4f9a52')+circ(108,106,3,'#4f9a52')+cheek(52,124,9)+cheek(148,124,9);
+ART.rabbit=el(72,56,16,46,'#efe6dc',-8)+el(128,56,16,46,'#efe6dc',8)+el(73,58,8,34,PK,-8)+el(127,58,8,34,PK,8)+el(100,128,52,48,'#efe6dc')+eye(78,122,6)+eye(122,122,6)+pth('M94 134h12l-6 7z',PK)+ln('M100 141v6M100 147q-7 7-13 2M100 147q7 7 13 2',K,3)+cheek(58,142)+cheek(142,142);
+/* xe */
+ART.car=rect(24,98,156,44,14,'#5b9bd5')+pth('M58 100L76 66Q80 60 90 60H124Q132 60 138 68L156 100Z','#5b9bd5')+pth('M68 98L82 70H100V98Z','#cfe6f5')+pth('M108 98V70H124L142 98Z','#cfe6f5')+circ(176,116,6,'#f6d365')+circ(60,144,20,K)+circ(60,144,9,'#d9d9d9')+circ(146,144,20,K)+circ(146,144,9,'#d9d9d9');
+ART.train=circ(52,34,10,CR)+circ(40,20,7,CR)+rect(48,56,24,36,4,'#4a4450')+rect(30,86,92,52,12,'#ef6f5a')+rect(112,56,56,82,8,'#5b9bd5')+rect(106,46,68,14,6,'#4a4450')+rect(124,70,32,28,4,'#cfe6f5')+circ(34,110,7,'#f6d365')+rect(24,134,150,10,4,'#4a4450')+circ(56,148,18,K)+circ(56,148,7,'#d9d9d9')+circ(100,148,18,K)+circ(100,148,7,'#d9d9d9')+circ(146,148,18,K)+circ(146,148,7,'#d9d9d9');
+/* đồ ăn uống */
+ART.milk=pth('M62 70H138L128 172H72Z','#dbe8f0')+pth('M65 94H135L128 172H72Z','#f8f4ea')+ln('M112 90L134 30','#ef7a7a',8);
+ART.water=pth('M62 70H138L128 172H72Z','#dbe8f0')+pth('M65 98H135L128 172H72Z','#7cc3ea')+pth('M100 14C110 30 118 38 118 48A18 18 0 0 1 82 48C82 38 90 30 100 14Z','#7cc3ea');
+ART.banana=ln('M54 48C46 118 92 168 154 156','#e4b92f',48)+ln('M54 48C46 118 92 168 154 156','#f6d04a',38)+ln('M62 62C58 112 92 152 140 148','#fbe38a',5,' opacity=".7"')+rect(44,24,20,24,4,'#8a6a3c')+circ(160,157,8,'#6b4a2e');
+ART.apple=pth('M100 62C70 40 30 62 35 112C40 152 75 176 100 166C125 176 160 152 165 112C170 62 130 40 100 62Z','#e9645a')+ln('M100 62C100 48 104 40 112 32','#8a6a3c',6)+pth('M108 46C118 26 146 24 156 38C144 54 120 58 108 46Z','#6fae5a')+el(66,96,10,18,'#fff',20,' opacity=".35"');
+ART.orange=circ(100,110,62,'#f4a340')+el(78,84,16,10,'#fff',-30,' opacity=".4"')+circ(120,130,3,'#e58e2a')+circ(86,138,3,'#e58e2a')+circ(132,98,3,'#e58e2a')+pth('M100 52C108 32 134 28 144 40C132 54 112 56 100 52Z','#6fae5a')+ln('M100 54v-12','#8a6a3c',5);
+ART.cookie=circ(100,104,64,'#d9a066')+circ(100,104,55,'#e4b27a')+el(72,84,9,7,'#6b4a2e',20)+el(120,74,9,7,'#6b4a2e',-20)+el(132,118,9,7,'#6b4a2e',30)+el(86,130,9,7,'#6b4a2e',-10)+el(104,100,8,6,'#6b4a2e',0)+el(60,114,7,5,'#6b4a2e',40);
+ART.rice=pth('M38 106Q46 48 100 44Q154 48 162 106Z',CR)+el(80,76,5,3,'#e4dccb',20)+el(112,62,5,3,'#e4dccb',-20)+el(128,88,5,3,'#e4dccb',10)+el(70,98,5,3,'#e4dccb',-10)+el(100,90,5,3,'#e4dccb',30)+ln('M122 22L168 96M138 18L180 90','#c98440',5)+pth('M28 102H172Q172 178 100 178Q28 178 28 102Z','#5b8fb9')+rect(24,96,152,14,7,'#7ba6c9')+circ(68,132,5,'#f2d38a')+circ(100,146,5,'#f2d38a')+circ(132,132,5,'#f2d38a');
+ART.egg=el(100,176,46,8,'#c9a98a',0,' opacity=".5"')+pth('M100 24C146 24 166 92 166 128C166 162 136 178 100 178C64 178 34 162 34 128C34 92 54 24 100 24Z','#f6ecd9')+el(76,84,10,20,'#fff',22,' opacity=".6"');
+ART.grapes=ln('M100 52V34','#8a6a3c',6)+pth('M100 44C120 22 152 28 154 50C130 60 108 56 100 44Z','#6fae5a')+[[70,70],[100,70],[130,70],[55,98],[85,98],[115,98],[145,98],[70,126],[100,126],[130,126],[85,152],[115,152],[100,176]].map(p=>circ(p[0],p[1],17,'#8a5fb5')+circ(p[0]-5,p[1]-5,4,'#fff',' opacity=".4"')).join('');
+/* đồ chơi */
+ART.ball=pth('M100 100L100 36A64 64 0 0 1 155.4 68Z','#ef6f5a')+pth('M100 100L155.4 68A64 64 0 0 1 155.4 132Z','#f6d365')+pth('M100 100L155.4 132A64 64 0 0 1 100 164Z','#5b9bd5')+pth('M100 100L100 164A64 64 0 0 1 44.6 132Z','#ef6f5a')+pth('M100 100L44.6 132A64 64 0 0 1 44.6 68Z','#f6d365')+pth('M100 100L44.6 68A64 64 0 0 1 100 36Z','#5b9bd5')+circ(100,100,10,CR)+el(76,66,10,16,'#fff',40,' opacity=".35"');
+ART.bear=circ(66,44,17,'#b5835a')+circ(134,44,17,'#b5835a')+circ(66,44,9,'#d8a97f')+circ(134,44,9,'#d8a97f')+el(100,146,44,40,'#b5835a')+el(100,152,26,26,'#d8a97f')+el(58,134,13,24,'#b5835a',25)+el(142,134,13,24,'#b5835a',-25)+el(74,184,20,12,'#a37048')+el(126,184,20,12,'#a37048')+circ(100,82,42,'#b5835a')+el(100,94,18,14,'#e6c9a3')+el(100,88,6,4.5,K)+eye(82,74,5)+eye(118,74,5)+ln('M100 92v6M100 98q-5 5-9 2M100 98q5 5 9 2',K,3)+pth('M84 120L100 128L116 120L116 134L100 130L84 134Z','#ef6f5a')+cheek(70,92,7)+cheek(130,92,7);
+ART.blocks=rect(34,112,60,60,8,'#ef6f5a')+rect(100,112,60,60,8,'#f2c14e')+rect(67,52,60,60,8,'#5b9bd5')+circ(64,142,13,CR)+pth('M130 128L146 156H114Z',CR)+rect(86,72,22,22,4,CR);
+ART.rocket=pth('M70 112L38 156L72 150Z','#ef6f5a')+pth('M130 112L162 156L128 150Z','#ef6f5a')+pth('M85 150Q100 198 115 150Z','#f6a93b')+pth('M100 20C140 50 140 120 130 150H70C60 120 60 50 100 20Z','#e8e4dc')+pth('M100 20C118 36 128 56 130 70H70C72 56 82 36 100 20Z','#ef6f5a')+circ(100,96,17,'#7b8fa8')+circ(100,96,12,'#9fc7e8')+rect(70,128,60,8,3,'#ef6f5a');
+ART.plane=pth('M92 98L66 54H100L132 98Z','#6fa0cc')+el(100,106,78,22,'#8fb8e0')+pth('M36 100L22 62H48L70 98Z','#5b86b8')+pth('M96 112L62 162H98L134 114Z','#5b86b8')+circ(146,102,6,CR)+circ(124,102,6,CR)+circ(102,102,6,CR)+circ(80,102,6,CR)+pth('M168 94Q182 100 176 112Q170 108 160 108Z','#6fa0cc');
+/* trong nhà */
+ART.house=rect(130,46,16,42,3,'#8a4a3a')+pth('M26 102L100 36L174 102Z','#b5604a')+rect(46,98,108,78,4,'#f2c14e')+rect(88,128,26,48,4,'#d94f3d')+circ(108,154,2.5,'#f6d365')+rect(58,112,24,24,3,'#cfe6f5')+rect(118,112,24,24,3,'#cfe6f5')+ln('M70 112v24M58 124h24M130 112v24M118 124h24','#f2c14e',2.5)+circ(100,72,10,'#cfe6f5');
+ART.chair=rect(52,36,18,82,8,'#e6a35a')+rect(52,100,100,18,8,'#e6a35a')+rect(56,116,12,58,5,'#c98440')+rect(136,116,12,58,5,'#c98440');
+ART.bed=rect(24,66,18,106,6,'#b5835a')+rect(158,100,18,72,6,'#b5835a')+rect(36,116,128,32,8,'#cfe0ee')+rect(64,98,100,48,10,'#ef9a8f')+el(58,106,24,13,CR)+ln('M70 128H160','#e07f74',4);
+ART.table=rect(26,84,148,18,9,'#d9a066')+rect(56,100,88,12,4,'#c98440')+rect(44,104,14,68,5,'#c98440')+rect(142,104,14,68,5,'#c98440');
+ART.lamp=ln('M100 14v14M44 40l10 10M156 40l-10 10M28 84h14M158 84h14','#f2c14e',5)+circ(100,86,42,'#f6d365')+el(86,72,10,16,'#fff',20,' opacity=".5"')+ln('M88 90q6 -12 12 0q6 12 12 0','#e8a43a',4)+rect(80,122,40,14,4,'#c9c9cf')+rect(84,136,32,12,4,'#a8a8b0')+rect(92,148,16,10,5,'#8a8a92');
+ART.tv=rect(28,44,144,100,12,'#3b4a5a')+rect(38,54,124,80,6,'#9fc7e8')+circ(130,80,14,'#f6d365')+pth('M38 134V112Q70 90 100 108T162 100V134Z','#7fc47a')+ln('M70 144L58 172M130 144L142 172M48 172H70M130 172H152','#3b4a5a',8);
+ART.cup=pth('M50 56H138V140Q138 176 94 176Q50 176 50 140Z','#6fb3d9')+ln('M138 80h14q14 0 14 22t-14 22h-14','#6fb3d9',12)+circ(76,100,6,CR)+circ(106,84,6,CR)+circ(100,126,6,CR)+circ(72,142,6,CR)+el(66,90,6,16,'#fff',0,' opacity=".35"')+ln('M76 40q-8-10 0-20M100 40q-8-10 0-20','#c9c9cf',5);
+ART.clock=circ(44,36,16,'#ef6f5a')+circ(156,36,16,'#ef6f5a')+circ(100,100,72,'#ef6f5a')+circ(100,100,60,CR)+Array.from({length:12},(_,i)=>{const a=i*Math.PI/6,r1=i%3?48:44,r2=54;return ln(`M${(100+Math.sin(a)*r1).toFixed(1)} ${(100-Math.cos(a)*r1).toFixed(1)}L${(100+Math.sin(a)*r2).toFixed(1)} ${(100-Math.cos(a)*r2).toFixed(1)}`,K,i%3?3:5)}).join('')+ln('M100 100V58',K,7)+ln('M100 100L128 116',K,6)+circ(100,100,7,'#ef6f5a');
+ART.window=rect(36,24,128,152,8,'#c9965e')+rect(46,34,52,64,3,'#a6d1ec')+rect(102,34,52,64,3,'#a6d1ec')+rect(46,102,52,64,3,'#a6d1ec')+rect(102,102,52,64,3,'#a6d1ec')+el(66,58,14,7,CR)+el(78,53,10,7,CR)+el(130,130,12,6,CR)+el(140,126,8,5,CR);
+ART.book=pth('M12 46V162Q62 150 100 168Q138 150 188 162V46Q138 34 100 50Q62 34 12 46Z','#5b9bd5')+pth('M100 56Q64 40 22 52V150Q64 140 100 156Z',CR)+pth('M100 56Q136 40 178 52V150Q136 140 100 156Z','#efe9dc')+circ(62,92,13,'#f2c14e')+pth('M34 134L58 106L84 134Z','#7fc47a')+ln('M118 76Q142 70 166 78M118 94Q142 88 166 96M118 112Q142 106 166 114M118 130Q142 124 160 130','#c9c2b0',4);
+ART.shoe=pth('M28 150Q26 96 52 88L84 84Q92 112 128 114Q172 118 176 150Z','#ef7a7a')+pth('M52 88Q54 70 74 74L84 84Z','#c95b5b')+pth('M128 114Q172 118 176 150H146Q150 128 128 114Z',CR)+ln('M96 96l12 10M108 98l12 10M120 102l10 8',CR,5)+pth('M24 148H178Q182 166 166 168H34Q22 166 24 148Z',CR);
+ART.hat=circ(100,40,14,CR)+pth('M40 122Q40 54 100 54Q160 54 160 122Z','#ef7a7a')+ln('M78 60Q70 90 70 120M100 56V120M122 60Q130 90 130 120','#d96363',4)+rect(34,116,132,30,12,'#f2c14e')+ln('M56 118v26M78 118v26M100 118v26M122 118v26M144 118v26','#e0ab3a',3);
+/* cơ thể */
+ART.eye=ln('M36 34Q100 8 164 34','#6b4a2e',9)+el(100,102,72,42,CR,0,` stroke="${K}" stroke-width="4"`)+circ(100,102,30,'#5b8fb9')+circ(100,102,15,K)+circ(110,92,7,'#fff')+ln('M52 72L40 56M80 62L74 44M120 62L126 44M148 72L160 56',K,4);
+ART.nose=pth('M100 36C112 64 134 104 140 128C144 148 126 162 100 162C74 162 56 148 60 128C66 104 88 64 100 36Z',SK)+el(84,142,10,7,SKD,-20)+el(116,142,10,7,SKD,20)+el(88,92,6,24,'#fff',10,' opacity=".35"');
+ART.mouth=pth('M32 100Q66 66 100 86Q134 66 168 100Q100 118 32 100Z','#d9546a')+pth('M32 100Q100 118 168 100Q146 156 100 156Q54 156 32 100Z','#e8707f')+pth('M48 104Q100 122 152 104Q134 140 100 140Q66 140 48 104Z','#7a2e3a')+pth('M54 106Q100 122 146 106L140 118Q100 130 60 118Z',CR)+el(100,132,18,8,'#e0626e');
+ART.ear=el(100,92,50,68,SK,8)+el(104,96,28,46,SKD,8)+el(106,98,16,30,SK,8)+el(96,160,17,16,SK);
+ART.hand=rect(62,50,17,64,8,SK)+rect(82,38,17,74,8,SK)+rect(102,42,17,72,8,SK)+rect(122,56,17,58,8,SK)+rect(54,100,92,66,30,SK)+`<rect x="34" y="112" width="18" height="50" rx="9" fill="${SK}" transform="rotate(-35 43 137)"/>`+rect(56,158,88,26,6,PK);
+ART.foot=rect(66,20,46,30,6,'#9fc7e8')+pth('M68 48H112V108C112 124 154 126 168 140C182 154 176 174 156 174H60C46 174 42 160 50 148C60 134 68 128 68 108Z',SK)+circ(166,152,5,SKD)+circ(154,162,4,SKD)+circ(176,160,4,SKD);
+/* bé làm gì */
+ART.eat=kid({mouth:'open'})+pth('M36 156H164Q164 198 100 198Q36 198 36 156Z','#e8a55a')+rect(32,150,136,12,6,'#f2c46e')+ln('M150 150L122 114','#cfd2d8',6)+el(117,109,9,6,'#cfd2d8',-50);
+ART.drink=kid({eyes:'happy',mouth:'none'})+`<g transform="rotate(-20 126 126)">`+pth('M104 98H150L144 148Q144 154 138 154H116Q110 154 110 148Z',CR)+pth('M107 114H147L144 148Q144 154 138 154H116Q110 154 110 148Z','#7cc3ea')+`</g>`+circ(152,152,12,SK);
+ART.sleep=rect(24,92,152,88,32,'#cfe0ee')+el(100,112,40,40,SK)+pth('M60 106Q56 66 100 66Q144 66 140 106Q128 82 100 84Q72 82 60 106Z','#5b3a2e')+eyeD(84,114,7)+eyeD(116,114,7)+smile(100,130,6)+cheek(70,126,7)+cheek(130,126,7)+pth('M20 144Q100 122 180 144V196H20Z','#ef9a8f')+ln('M20 160Q100 138 180 160','#e07f74',4)+ln('M140 52h20l-20 22h20','#7b6fb5',6)+ln('M168 24h14l-14 16h14','#7b6fb5',5);
+ART.bath=el(100,92,36,38,SK)+circ(64,96,8,SK)+circ(136,96,8,SK)+pth('M64 88Q60 52 100 52Q140 52 136 88Q126 66 100 68Q74 66 64 88Z','#5b3a2e')+circ(80,48,13,CR)+circ(102,40,15,CR)+circ(124,50,12,CR)+circ(96,52,12,CR)+eyeU(86,98,7)+eyeU(114,98,7)+smile(100,112,9)+cheek(72,110,7)+cheek(128,110,7)+pth('M20 126H180Q180 192 100 192Q20 192 20 126Z','#cfd8e0')+rect(14,118,172,14,7,CR)+circ(54,142,10,CR)+circ(74,150,7,CR)+circ(40,160,6,CR)+el(150,116,16,11,'#f7d559')+circ(160,102,9,'#f7d559')+el(171,104,6,3,'#f0993a')+bubble(162,64,8)+bubble(178,84,5);
+ART.wave=kid({})+ln('M150 162Q176 128 166 78','#5b9bd5',22)+circ(166,66,13,SK)+ln('M186 46q10 14 0 28','#7b6fb5',4)+ln('M146 42q-8 12 0 24','#7b6fb5',4);
+ART.thanks=kid({eyes:'happy'})+ln('M50 198Q60 162 96 158','#5b9bd5',20)+ln('M150 198Q140 162 104 158','#5b9bd5',20)+el(100,154,13,20,SK)+ln('M100 138V170',SKD,2.5)+heart(150,62,1.3,'#ef8f8a');
+ART.kiss=kid({eyes:'happy',mouth:'kiss'})+heart(150,58,1.6,'#ef6f8a')+heart(166,88,1,'#ef8f8a');
+ART.walk=el(100,188,50,6,'#000',0,' opacity=".12"')+ln('M90 124L74 168','#4a5a8a',16)+ln('M110 124L134 160','#4a5a8a',16)+el(70,176,15,8,'#ef6f5a')+el(140,168,15,8,'#ef6f5a')+ln('M80 80L60 114','#5b9bd5',12)+circ(58,118,7,SK)+ln('M120 80L142 104','#5b9bd5',12)+circ(145,108,7,SK)+rect(76,70,48,60,18,'#5b9bd5')+circ(76,44,6,SK)+circ(124,44,6,SK)+el(100,44,27,29,SK)+pth('M73 40Q72 14 100 14Q128 14 127 40Q118 26 100 28Q82 26 73 40Z','#5b3a2e')+eye(90,46,3.5)+eye(110,46,3.5)+smile(100,56,6);
+/* biểu tượng nhóm */
+ART.sound=pth('M24 78H58L100 44V156L58 122H24Z',K)+ln('M124 76Q142 100 124 124',K,9)+ln('M146 58Q180 100 146 142',K,9);
+ART.camera=rect(26,66,148,100,16,'#5b6f8a')+rect(70,48,44,24,6,'#5b6f8a')+circ(100,116,34,CR)+circ(100,116,24,'#3a4a62')+circ(109,107,7,'#8fb8e0')+circ(150,86,7,'#f2c14e');
+ART.target=circ(100,100,70,'#ef6f5a')+circ(100,100,52,CR)+circ(100,100,34,'#ef6f5a')+circ(100,100,16,CR);
+const svg=k=>`<svg viewBox="0 0 200 200" aria-hidden="true">${ART[k]||''}</svg>`;
+/* ---------- hết tranh ---------- */
+
+
+/* ---------- dữ liệu từ ---------- */
+const RAW=[
+ {id:'fam',n:'Gia đình',a:'baby',t:'--t-fam',c:[['mẹ','','mom'],['bố','','dad'],['bà','','grandma'],['ông','','grandpa'],['bé','','baby'],['anh','','brother'],['chị','','sister']]},
+ {id:'ani',n:'Con vật',a:'cow',t:'--t-ani',c:[['mèo','','cat'],['chó','','dog'],['gà','','chick'],['vịt','','duck'],['bò','','cow'],['heo','','pig'],['cá','','fish'],['chim','','bird'],['voi','','elephant'],['ếch','','frog'],['thỏ','','rabbit']]},
+ {id:'food',n:'Đồ ăn uống',a:'apple',t:'--t-food',c:[['sữa','','milk'],['nước','','water'],['chuối','','banana'],['táo','','apple'],['cam','','orange'],['bánh','','cookie'],['cơm','','rice'],['trứng','','egg'],['nho','','grapes']]},
+ {id:'toy',n:'Đồ chơi',a:'bear',t:'--t-thing',c:[['bóng','','ball'],['xe','','car'],['tàu','','train'],['gấu','','bear']]},
+ {id:'home',n:'Trong nhà',a:'house',t:'--t-home',c:[['nhà','','house'],['ghế','','chair'],['giường','','bed'],['bàn','','table'],['đèn','','lamp'],['cốc','','cup'],['cửa','','window'],['sách','','book'],['giày','','shoe'],['mũ','','hat']]},
+ {id:'body',n:'Cơ thể bé',a:'eye',t:'--t-body',c:[['mắt','','eye'],['mũi','','nose'],['miệng','','mouth'],['tai','','ear'],['tay','','hand'],['chân','','foot']]},
+ {id:'act',n:'Bé làm gì',a:'wave',t:'--t-act',c:[['ăn','','eat'],['uống','','drink'],['ngủ','','sleep'],['tắm','','bath'],['chào','','wave'],['dạ','','thanks'],['hôn','','kiss'],['đi','','walk']]}
+];
+
+/* ---------- lưu trữ trên máy ---------- */
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+};
+let S=Object.assign({rate:.75,wait:3,auto:true,rest:15,voice:''},store.get('btn_s',{}));
+let OV=store.get('btn_o',{});   // {idThẻ:{img,audio}}
+let CU=store.get('btn_c',[]);   // thẻ nhà mình [{id,w,p}]
+function persist(){return store.set('btn_s',S)&store.set('btn_o',OV)&store.set('btn_c',CU)}
+
+function cats(){
+  const out=RAW.map(c=>({id:c.id,n:c.n,a:c.a,t:c.t,cards:c.c.map((x,i)=>({id:c.id+':'+i,w:x[0],p:x[1],a:x[2]}))}));
+  if(CU.length)out.push({id:'own',n:'Nhà mình',a:'camera',t:'--t-own',cards:CU.map(x=>({id:'c:'+x.id,w:x.w,p:x.p||'',a:'',custom:x.id}))});
+  return out;
+}
+function picNode(card){
+  const o=OV[card.id];
+  if(o&&o.img){const im=new Image();im.alt='';im.src=o.img;return im}
+  const w=document.createElement('div');w.className='art';w.innerHTML=svg(card.a);return w;
+}
+
+/* ---------- giọng đọc ---------- */
+const synth='speechSynthesis' in window?window.speechSynthesis:null;
+let voice=null,curAudio=null,run=0;
+function viVoices(){return synth?synth.getVoices().filter(v=>/^vi([-_]|$)/i.test(v.lang)):[]}
+function score(v){let s=0,n=v.name;
+  if(/hoai ?my|hoài ?my|linh|\bfemale\b|\bnữ\b|\bmai\b|phương/i.test(n))s+=6;
+  if(/nam ?minh|\bnam\b|\bmale\b|microsoft an\b|\bđức\b/i.test(n))s-=10;
+  if(/enhanced|premium|nâng cao|cao cấp|neural/i.test(n))s+=3;if(/compact/i.test(n))s-=1;
+  if(/google/i.test(n))s+=2;if(/natural|neural|online/i.test(n))s+=3;return s}
+function chooseVoice(){
+  const list=viVoices();
+  voice=list.find(v=>v.voiceURI===S.voice)||list.sort((a,b)=>score(b)-score(a))[0]||null;
+}
+if(synth){chooseVoice();synth.onvoiceschanged=chooseVoice}
+function stopAll(){run++;try{synth&&synth.cancel()}catch(e){}if(curAudio){try{curAudio.pause()}catch(e){}curAudio=null}return run}
+function speakOne(text,rate,pitch=1.08){
+  return new Promise(res=>{
+    if(!synth){res();return}
+    const u=new SpeechSynthesisUtterance(text);u.lang='vi-VN';if(voice)u.voice=voice;u.rate=rate;u.pitch=pitch;
+    let done=false;const fin=()=>{if(!done){done=true;clearTimeout(t);res()}};
+    const t=setTimeout(fin,Math.max(2500,text.length*450/rate));
+    u.onend=fin;u.onerror=fin;
+    try{synth.speak(u)}catch(e){fin()}
+  });
+}
+const speak=(t,rate=S.rate,pitch=1.08)=>speakOne(t,rate,pitch);
+function playAudio(src){
+  return new Promise(res=>{
+    const a=new Audio(src);curAudio=a;a.onended=()=>res();a.onerror=()=>res();
+    const p=a.play();if(p&&p.catch)p.catch(()=>res());
+  });
+}
+const sayCardWord=(c,rate)=>{const o=OV[c.id];return o&&o.audio?playAudio(o.audio):speak(c.w,rate)};
+// hiệu ứng âm thanh: đúng = ting ting, sai = tè tè (không dùng giọng nói)
+let ac=null;
+function sfx(kind){
+  try{
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();
+    const t0=ac.currentTime;
+    const beep=(f,st,d,type,vol)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0.0001,t0+st);g.gain.linearRampToValueAtTime(vol,t0+st+.01);g.gain.exponentialRampToValueAtTime(.0001,t0+st+d);o.connect(g);g.connect(ac.destination);o.start(t0+st);o.stop(t0+st+d+.02)};
+    if(kind==='ok'){beep(1568,0,.22,'sine',.3);beep(2093,.18,.4,'sine',.3)}
+    else{beep(160,0,.16,'square',.12);beep(140,.22,.2,'square',.12)}
+  }catch(e){}
+}
+// mở khóa âm thanh trên iOS ở lần chạm đầu
+addEventListener('pointerdown',()=>{if(synth){try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;synth.speak(u)}catch(e){}}},{once:true});
+
+/* ---------- chuyển màn hình ---------- */
+const views={home:$('#vHome'),card:$('#vCard'),quiz:$('#vQuiz')};
+let view='home',ci=0,cardI=0,used=0;
+function show(v){
+  stopAll();view=v;
+  for(const k in views)views[k].hidden=k!==v;
+}
+document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{show('home')}));
+
+/* trang chủ */
+function renderHome(){
+  const g=$('#catGrid');g.replaceChildren();
+  cats().forEach((c,i)=>{
+    const b=document.createElement('button');b.className='cat';b.style.setProperty('--tint','var('+c.t+')');
+    b.innerHTML='<span class="e"></span><span class="n"></span>';
+    b.firstChild.innerHTML=svg(c.a);b.lastChild.textContent=c.n;
+    b.addEventListener('click',()=>{ci=i;show('card');$('#cTitle').textContent=c.n;showCard(0,0)});
+    g.appendChild(b);
+  });
+  const q=document.createElement('button');q.className='cat quiz';
+  q.innerHTML='<span class="e">'+svg('target')+'</span><span class="n">Nghe và chọn hình</span>';
+  q.addEventListener('click',()=>{show('quiz');quizRound()});
+  g.appendChild(q);
+}
+
+/* thẻ học */
+const stText=$('#stText'),bar=$('#bar');
+function setStatus(k){
+  stText.textContent={listen:'Con nghe nhé',turn:'Con nói nào!',idle:'Chạm vào hình để nghe',done:'Chạm vào hình để nghe lại'}[k]||'';
+  if(k==='turn'){
+    bar.hidden=false;bar.classList.remove('run');bar.style.setProperty('--w',S.wait+'s');void bar.offsetWidth;bar.classList.add('run');
+  }else{bar.hidden=true;bar.classList.remove('run')}
+}
+function curCard(){const c=cats()[ci];return c?c.cards[cardI]:null}
+function showCard(i,dir){
+  const cat=cats()[ci];if(!cat)return show('home');
+  const n=cat.cards.length;cardI=((i%n)+n)%n;const c=cat.cards[cardI];
+  const pic=$('#pic');pic.style.setProperty('--tint','var('+cat.t+')');pic.replaceChildren(picNode(c));
+  $('#word').textContent=c.w;$('#phrase').textContent='';
+  const d=$('#dots');d.replaceChildren();
+  if(n<=12){for(let k=0;k<n;k++){const x=document.createElement('i');if(k===cardI)x.className='on';d.appendChild(x)}}
+  else d.textContent=(cardI+1)+' / '+n;
+  if(dir&&!reduce)$('#stage').animate([{opacity:0,transform:'translateX('+(dir*28)+'px)'},{opacity:1,transform:'none'}],{duration:180,easing:'ease-out'});
+  if(S.auto)sayCard(c);else{stopAll();setStatus('idle')}
+}
+async function sayCard(c){
+  const id=stopAll();setStatus('listen');$('#phrase').textContent='';
+  await sleep(60);if(id!==run)return;
+  await sayCardWord(c,S.rate);if(id!==run)return;
+  if(S.wait>0){
+    setStatus('turn');await sleep(S.wait*1000);if(id!==run)return;
+    setStatus('listen');await sayCardWord(c,S.rate);if(id!==run)return;
+  }
+  setStatus('done');
+}
+function replay(){const c=curCard();if(!c)return;const p=$('#pic');if(!reduce)p.animate([{transform:'scale(.96)'},{transform:'none'}],{duration:200});sayCard(c)}
+$('#bSay').addEventListener('click',e=>{e.stopPropagation();replay()});
+$('#bPrev').addEventListener('click',e=>{e.stopPropagation();showCard(cardI-1,-1)});
+$('#bNext').addEventListener('click',e=>{e.stopPropagation();showCard(cardI+1,1)});
+// chạm vào hình = nghe lại, vuốt ngang = đổi thẻ
+(()=>{
+  const st=$('#stage');let x0=0,y0=0,on=false;
+  st.addEventListener('pointerdown',e=>{x0=e.clientX;y0=e.clientY;on=true});
+  st.addEventListener('pointerup',e=>{
+    if(!on)return;on=false;const dx=e.clientX-x0,dy=e.clientY-y0;
+    if(Math.abs(dx)>50&&Math.abs(dy)<70)showCard(cardI+(dx<0?1:-1),dx<0?1:-1);
+    else if(Math.abs(dx)<12&&Math.abs(dy)<12)replay();
+  });
+  st.addEventListener('pointercancel',()=>{on=false});
+})();
+
+/* chọn hình */
+let qTarget=null,qLock=false;
+function quizRound(){
+  const pool=cats().filter(c=>c.id!=='snd'&&c.cards.length>=2);
+  const cat=pick(pool),t=pick(cat.cards);let o;do{o=pick(cat.cards)}while(o.id===t.id);
+  qTarget=t;qLock=false;$('#qStatus').textContent='';$('#qWord').textContent=t.w;
+  const g=$('#qGrid');g.replaceChildren();
+  (Math.random()<.5?[t,o]:[o,t]).forEach(c=>{
+    const b=document.createElement('button');b.className='opt';b.style.setProperty('--tint','var('+cat.t+')');b.setAttribute('aria-label',c.w);
+    b.appendChild(picNode(c));b.addEventListener('click',()=>choose(c,b));g.appendChild(b);
+  });
+  qAsk();
+}
+async function qAsk(){const id=stopAll();await sleep(250);if(id!==run)return;await sayCardWord(qTarget,S.rate)}
+async function qTry(){const id=stopAll();sfx('no');await sleep(650);if(id!==run)return;await sayCardWord(qTarget,S.rate)}
+$('#qSay').addEventListener('click',()=>{if(!qLock)qAsk()});
+async function choose(c,btn){
+  if(qLock)return;
+  if(c.id===qTarget.id){
+    qLock=true;btn.classList.add('ok');
+    const id=stopAll();sfx('ok');await sleep(500);if(id!==run)return;
+    await sleep(700);if(id!==run)return;quizRound();
+  }else{
+    btn.classList.add('no');setTimeout(()=>btn.classList.remove('no'),450);qTry();
+  }
+}
+
+/* ---------- giữ để mở (tránh bé bấm nhầm) ---------- */
+function bindHold(el,ms,cb){
+  let t=null;
+  el.addEventListener('pointerdown',()=>{if(t)return;el.style.setProperty('--hold',ms+'ms');el.classList.add('holding');t=setTimeout(()=>{t=null;el.classList.remove('holding');cb()},ms)});
+  const stop=()=>{if(t){clearTimeout(t);t=null}el.classList.remove('holding')};
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>el.addEventListener(ev,stop));
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cb()}});
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+}
+document.querySelectorAll('[data-hold]').forEach(b=>bindHold(b,1200,openSheet));
+
+/* ---------- bảng bố mẹ ---------- */
+const sheet=$('#sheet'),msg=$('#msg');
+function say(t,err){msg.textContent=t;msg.classList.toggle('err',!!err)}
+function seg(id,key){
+  const box=$(id);
+  const paint=()=>box.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.v===+S[key])));
+  box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{S[key]=+b.dataset.v;persist();paint();if(key==='rest')used=0}));
+  return paint;
+}
+const paintRate=seg('#segRate','rate'),paintWait=seg('#segWait','wait'),paintRest=seg('#segRest','rest');
+$('#chAuto').addEventListener('change',e=>{S.auto=e.target.checked;persist()});
+function paintVoice(){
+  const list=viVoices(),info=$('#voiceInfo'),fld=$('#voiceFld'),sel=$('#voiceSel');
+  if(!synth)info.textContent='Trình duyệt này không đọc thành tiếng được. Hãy dùng Chrome, Edge hoặc Safari, hoặc thu giọng bố mẹ cho từng thẻ.';
+  else if(!list.length)info.textContent='Máy này chưa có giọng tiếng Việt. Hãy cài giọng tiếng Việt trong phần cài đặt giọng nói của máy, hoặc thu giọng bố mẹ cho từng thẻ.';
+  else info.textContent='Đang dùng: '+(voice?voice.name:'giọng mặc định')+'. Máy ưu tiên chọn giọng nữ. Giọng có chữ Natural hoặc Online thường tự nhiên hơn.';
+  fld.hidden=list.length<2;
+  if(list.length>1){sel.replaceChildren();list.forEach(v=>{const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name;if(voice&&v.voiceURI===voice.voiceURI)o.selected=true;sel.appendChild(o)})}
+}
+$('#voiceSel').addEventListener('change',e=>{S.voice=e.target.value;persist();chooseVoice();paintVoice()});
+$('#btnTest').addEventListener('click',async()=>{const id=stopAll();await sleep(60);if(id!==run)return;speak('mẹ')});
+
+function paintCardTools(){
+  const box=$('#cardTools'),c=view==='card'?curCard():null;
+  box.hidden=!c;if(!c)return;
+  const o=OV[c.id]||{};
+  $('#ctName').textContent='Thẻ đang xem: '+c.w;
+  $('#btnImgDel').hidden=!(o.img&&!c.custom);
+  $('#btnAudDel').hidden=!o.audio;
+  const del=$('#btnCardDel');del.hidden=!c.custom;del.textContent='Xóa thẻ này';del.dataset.arm='';
+}
+function openSheet(){
+  stopAll();
+  paintRate();paintWait();paintRest();$('#chAuto').checked=S.auto;paintVoice();paintCardTools();say('');
+  sheet.hidden=false;
+}
+function closeSheet(){
+  sheet.hidden=true;stopAll();
+  if(view==='card')showCard(cardI,0);
+  renderHome();
+}
+$('#btnClose').addEventListener('click',closeSheet);
+
+function readFile(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+function shrinkImage(file,max=480){
+  return readFile(file).then(src=>new Promise((res,rej)=>{
+    const im=new Image();
+    im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.82))};
+    im.onerror=rej;im.src=src;
+  }));
+}
+function save(okText){say(persist()?okText:'Bộ nhớ trên máy đã đầy. Hãy bỏ bớt ảnh hoặc giọng riêng.',!persist())}
+
+$('#btnImg').addEventListener('click',()=>$('#fImg').click());
+$('#fImg').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';const c=curCard();if(!f||!c)return;
+  try{const img=await shrinkImage(f);OV[c.id]=Object.assign(OV[c.id]||{},{img});save('Đã dùng ảnh thật cho thẻ này.');paintCardTools();showCardPicOnly()}catch(x){say('Không đọc được ảnh này. Thử ảnh khác nhé.',true)}
+});
+function showCardPicOnly(){const c=curCard();if(c)$('#pic').replaceChildren(picNode(c))}
+$('#btnImgDel').addEventListener('click',()=>{const c=curCard();if(!c||!OV[c.id])return;delete OV[c.id].img;if(!OV[c.id].audio)delete OV[c.id];save('Đã bỏ ảnh riêng.');paintCardTools();showCardPicOnly()});
+$('#btnAud').addEventListener('click',()=>$('#fAud').click());
+$('#fAud').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';const c=curCard();if(!f||!c)return;
+  if(f.size>800*1024){say('File dài quá. Hãy thu dưới 10 giây.',true);return}
+  try{const audio=await readFile(f);OV[c.id]=Object.assign(OV[c.id]||{},{audio});save('Đã lưu giọng bố mẹ. Chạm vào hình để nghe thử.');paintCardTools()}catch(x){say('Không đọc được file âm thanh này.',true)}
+});
+$('#btnAudDel').addEventListener('click',()=>{const c=curCard();if(!c||!OV[c.id])return;delete OV[c.id].audio;if(!OV[c.id].img)delete OV[c.id];save('Đã bỏ giọng riêng. Thẻ sẽ dùng giọng máy.');paintCardTools()});
+$('#btnCardDel').addEventListener('click',e=>{
+  const b=e.currentTarget,c=curCard();if(!c||!c.custom)return;
+  if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='Bấm lần nữa để xóa';setTimeout(()=>{b.dataset.arm='';b.textContent='Xóa thẻ này'},3000);return}
+  CU=CU.filter(x=>x.id!==c.custom);delete OV[c.id];persist();
+  sheet.hidden=true;renderHome();
+  if(CU.length){ci=cats().length-1;showCard(0,0)}else show('home');
+});
+
+let newImg='';
+$('#btnNewImg').addEventListener('click',()=>$('#fNew').click());
+$('#fNew').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{newImg=await shrinkImage(f);$('#newImgName').textContent='Đã chọn ảnh: '+(f.name||'ảnh mới')}catch(x){newImg='';say('Không đọc được ảnh này. Thử ảnh khác nhé.',true)}
+});
+$('#btnNewAdd').addEventListener('click',()=>{
+  const w=$('#newWord').value.trim().replace(/\s+/g,' '),p='';
+  if(!w){say('Hãy nhập từ cho thẻ mới.',true);return}
+  if(/\s/.test(w)){say('Chỉ nhập một tiếng thôi nhé, ví dụ: ba, bé, mèo.',true);return}
+  if(!newImg){say('Hãy chọn một ảnh cho thẻ mới.',true);return}
+  const id=Date.now().toString(36);CU.push({id,w,p});OV['c:'+id]={img:newImg};
+  if(!persist()){CU.pop();delete OV['c:'+id];say('Bộ nhớ trên máy đã đầy. Hãy bỏ bớt ảnh hoặc giọng riêng.',true);return}
+  newImg='';$('#newWord').value='';$('#newImgName').textContent='Chưa chọn ảnh';
+  say('Đã thêm thẻ "'+w+'" vào nhóm Nhà mình.');renderHome();
+});
+
+/* ---------- nghỉ mắt ---------- */
+const rest=$('#rest');
+setInterval(()=>{
+  if(document.hidden||!rest.hidden||!sheet.hidden||!S.rest)return;
+  used++;
+  if(used>=S.rest*60){stopAll();rest.hidden=false}
+},1000);
+bindHold($('#restGo'),1200,()=>{rest.hidden=true;used=0});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopAll()});
+
+renderHome();
+})();
+</script>
+
+</body></html>
