@@ -12,10 +12,6 @@
   --accent:#3f6f5b; --accent-ink:#f1f6ee; --focus:#2d5fa3;
   --t-fam:#efd1cb; --t-snd:#f1e0b0; --t-ani:#d3e3c0; --t-food:#f2cfb0; --t-thing:#cbdbe8; --t-body:#e0cfe6; --t-act:#c9e8df; --t-home:#dcd8c8; --t-own:#e9d3bf;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#1e2823; --surface:#27332d; --ink:#e2eadf; --muted:#a6b8ac; --line:#3b4b43;
-  --accent:#8dc2a9; --accent-ink:#14201a; --focus:#8db6e8;
-  --t-fam:#584240; --t-snd:#585135; --t-ani:#3e5137; --t-food:#5a4533; --t-thing:#37485a; --t-body:#4c3f56; --t-act:#34544c; --t-home:#4a4a40; --t-own:#54453a; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#1e2823; --surface:#27332d; --ink:#e2eadf; --muted:#a6b8ac; --line:#3b4b43;
   --accent:#8dc2a9; --accent-ink:#14201a; --focus:#8db6e8;
@@ -104,7 +100,7 @@ input[type=checkbox]{width:26px;height:26px;accent-color:var(--accent)}
 .fld{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .msg{min-height:22px;margin:10px 0 0;font-weight:700;color:var(--accent)}
 .msg.err{color:#b4483a}
-@media (prefers-color-scheme:dark){.msg.err{color:#f0a090}}
+:root[data-theme="dark"] .msg.err{color:#f0a090}
 
 /* nghỉ mắt */
 .rest{position:fixed;inset:0;z-index:30;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px}
@@ -113,6 +109,15 @@ input[type=checkbox]{width:26px;height:26px;accent-color:var(--accent)}
 .rest p{margin:0;font-size:18px;color:var(--muted);max-width:30ch}
 .rest .btn{margin-top:12px;position:relative;overflow:hidden}
 
+
+/* chọn hình: 2 ô thật to, chạm nhẹ là nhận (tay bé nhỏ) */
+.qwrap{justify-content:flex-start;gap:8px;padding-bottom:8px}
+.qwrap .round.big{width:72px;height:72px}.qwrap .round.big svg{width:34px;height:34px}
+.qwrap .word{font-size:clamp(36px,10vw,52px);margin:0}
+.qwrap .status{display:none}
+.qgrid{flex:1;min-height:0;grid-template-columns:1fr;grid-template-rows:1fr 1fr;gap:12px}
+.opt{aspect-ratio:auto;width:100%;height:100%;min-height:0;border-radius:36px;border-width:6px;touch-action:manipulation}
+@media (orientation:landscape){.qgrid{grid-template-columns:1fr 1fr;grid-template-rows:1fr}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -182,6 +187,10 @@ input[type=checkbox]{width:26px;height:26px;accent-color:var(--accent)}
       <p class="note">Thu giọng: máy sẽ mở ứng dụng ghi âm, thu một từ dưới 10 giây. Nếu máy không mở ghi âm, hãy chọn một file âm thanh đã có.</p>
     </div>
 
+    <h3>Giao diện</h3>
+    <div class="row"><span>Màu màn hình<small>Sáng cho ban ngày, tối cho buổi tối</small></span>
+      <div class="seg" id="segTheme"><button data-v="light">Sáng</button><button data-v="dark">Tối</button></div></div>
+
     <h3>Cách đọc</h3>
     <div class="row"><span>Tốc độ đọc<small>Chậm giúp bé nghe rõ từng âm.</small></span>
       <div class="seg" id="segRate"><button data-v="0.6">Rất chậm</button><button data-v="0.75">Chậm</button><button data-v="0.95">Vừa</button></div></div>
@@ -215,6 +224,14 @@ input[type=checkbox]{width:26px;height:26px;accent-color:var(--accent)}
     <p class="msg" id="msg" role="status"></p>
     <div class="btns"><button class="btn pri" id="btnClose">Xong</button></div>
   </div>
+</div>
+
+<!-- MÀN HÌNH BẮT ĐẦU (iPhone cần một lần chạm để cho phép phát tiếng) -->
+<div class="rest" id="start" role="button" tabindex="0" aria-label="Chạm để bắt đầu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h4l5 4V5.5l-5 4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+  <h2>Bé Tập Nói</h2>
+  <p>Chạm vào đây để bắt đầu nhé</p>
+  <span class="btn pri" style="pointer-events:none">Bắt đầu</span>
 </div>
 
 <!-- NGHỈ MẮT -->
@@ -362,6 +379,19 @@ ART.walk=el(100,188,50,6,'#000',0,' opacity=".12"')+ln('M90 124L74 168','#4a5a8a
 ART.sound=pth('M24 78H58L100 44V156L58 122H24Z',K)+ln('M124 76Q142 100 124 124',K,9)+ln('M146 58Q180 100 146 142',K,9);
 ART.camera=rect(26,66,148,100,16,'#5b6f8a')+rect(70,48,44,24,6,'#5b6f8a')+circ(100,116,34,CR)+circ(100,116,24,'#3a4a62')+circ(109,107,7,'#8fb8e0')+circ(150,86,7,'#f2c14e');
 ART.target=circ(100,100,70,'#ef6f5a')+circ(100,100,52,CR)+circ(100,100,34,'#ef6f5a')+circ(100,100,16,CR);
+/* số đếm: chữ số to + đúng số chấm tròn để bé đếm */
+const NCOL=['#ef8f8a','#f2a65a','#f6d365','#7fc47a','#5b9bd5','#9a6fd0'];
+function numArt(n){
+  const row=(c,y,r,g,off)=>{let o='';const w=(c-1)*g;for(let i=0;i<c;i++)o+=circ(100-w/2+i*g,y,r,NCOL[(i+off)%6]);return o};
+  const top=n<=5?n:Math.ceil(n/2),bot=n<=5?0:n-top,small=n>5;
+  const dots=small?row(top,130,11,30,0)+row(bot,166,11,30,top):row(top,150,14,34,0);
+  return `<text x="100" y="${small?90:106}" text-anchor="middle" font-family="'Baloo 2','Nunito',sans-serif" font-weight="700" font-size="${small?78:94}" fill="${K}">${n}</text>`+dots;
+}
+for(let i=1;i<=10;i++)ART['n'+i]=numArt(i);
+/* màu sắc: bóng bay */
+const balloon=(c,edge)=>{const st=edge?' stroke="#c9c9c2" stroke-width="3"':'';return ln('M100 150Q90 166 102 178Q110 188 98 198','#8a8a92',3)+pth('M100 146L91 158H109Z',c,st)+el(100,88,56,64,c,0,st)+el(76,62,10,18,'#fff',25,' opacity=".5"')};
+ART.c_red=balloon('#e8544a');ART.c_blue=balloon('#4a8fd9');ART.c_green=balloon('#5fb86a');ART.c_yellow=balloon('#f5cf3f');ART.c_orange=balloon('#f29a38');
+ART.c_purple=balloon('#9a6fd0');ART.c_pink=balloon('#f28fb5');ART.c_white=balloon('#fbfbf8',1);ART.c_black=balloon('#3a3a40');ART.c_brown=balloon('#9a6a46');
 const svg=k=>`<svg viewBox="0 0 200 200" aria-hidden="true">${ART[k]||''}</svg>`;
 /* ---------- hết tranh ---------- */
 
@@ -374,6 +404,8 @@ const RAW=[
  {id:'toy',n:'Đồ chơi',a:'bear',t:'--t-thing',c:[['bóng','','ball'],['xe','','car'],['tàu','','train'],['gấu','','bear']]},
  {id:'home',n:'Trong nhà',a:'house',t:'--t-home',c:[['nhà','','house'],['ghế','','chair'],['giường','','bed'],['bàn','','table'],['đèn','','lamp'],['cốc','','cup'],['cửa','','window'],['sách','','book'],['giày','','shoe'],['mũ','','hat']]},
  {id:'body',n:'Cơ thể bé',a:'eye',t:'--t-body',c:[['mắt','','eye'],['mũi','','nose'],['miệng','','mouth'],['tai','','ear'],['tay','','hand'],['chân','','foot']]},
+ {id:'num',n:'Số đếm',a:'n3',t:'--t-snd',c:[['một','','n1'],['hai','','n2'],['ba','','n3'],['bốn','','n4'],['năm','','n5'],['sáu','','n6'],['bảy','','n7'],['tám','','n8'],['chín','','n9'],['mười','','n10']]},
+ {id:'col',n:'Màu sắc',a:'c_red',t:'--t-body',c:[['đỏ','','c_red'],['xanh dương','','c_blue'],['xanh lá','','c_green'],['vàng','','c_yellow'],['cam','','c_orange'],['tím','','c_purple'],['hồng','','c_pink'],['trắng','','c_white'],['đen','','c_black'],['nâu','','c_brown']]},
  {id:'act',n:'Bé làm gì',a:'wave',t:'--t-act',c:[['ăn','','eat'],['uống','','drink'],['ngủ','','sleep'],['tắm','','bath'],['chào','','wave'],['dạ','','thanks'],['hôn','','kiss'],['đi','','walk']]}
 ];
 
@@ -382,7 +414,9 @@ const store={
   get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
 };
-let S=Object.assign({rate:.75,wait:3,auto:true,rest:15,voice:''},store.get('btn_s',{}));
+let S=Object.assign({rate:.75,wait:3,auto:true,rest:15,voice:'',theme:'light'},store.get('btn_s',{}));
+function applyTheme(){document.documentElement.setAttribute('data-theme',S.theme==='dark'?'dark':'light');const m=document.querySelector('meta[name=theme-color]')||document.head.appendChild(Object.assign(document.createElement('meta'),{name:'theme-color'}));m.content=S.theme==='dark'?'#1e2823':'#dde7d9'}
+applyTheme();
 let OV=store.get('btn_o',{});   // {idThẻ:{img,audio}}
 let CU=store.get('btn_c',[]);   // thẻ nhà mình [{id,w,p}]
 function persist(){return store.set('btn_s',S)&store.set('btn_o',OV)&store.set('btn_c',CU)}
@@ -439,11 +473,20 @@ function sfx(kind){
     const t0=ac.currentTime;
     const beep=(f,st,d,type,vol)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0.0001,t0+st);g.gain.linearRampToValueAtTime(vol,t0+st+.01);g.gain.exponentialRampToValueAtTime(.0001,t0+st+d);o.connect(g);g.connect(ac.destination);o.start(t0+st);o.stop(t0+st+d+.02)};
     if(kind==='ok'){beep(1568,0,.22,'sine',.3);beep(2093,.18,.4,'sine',.3)}
-    else{beep(160,0,.16,'square',.12);beep(140,.22,.2,'square',.12)}
+    else{beep(392,0,.18,'sine',.16);beep(330,.2,.28,'sine',.16)}
   }catch(e){}
 }
 // mở khóa âm thanh trên iOS ở lần chạm đầu
 addEventListener('pointerdown',()=>{if(synth){try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;synth.speak(u)}catch(e){}}},{once:true});
+const startEl=$('#start');
+function begin(){
+  if(startEl.hidden)return;startEl.hidden=true;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}
+  if(synth){try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;synth.speak(u)}catch(e){}}
+  setTimeout(()=>speak('chào con'),200);
+}
+startEl.addEventListener('pointerdown',begin);
+startEl.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();begin()}});
 
 /* ---------- chuyển màn hình ---------- */
 const views={home:$('#vHome'),card:$('#vCard'),quiz:$('#vQuiz')};
@@ -525,7 +568,7 @@ function quizRound(){
   const g=$('#qGrid');g.replaceChildren();
   (Math.random()<.5?[t,o]:[o,t]).forEach(c=>{
     const b=document.createElement('button');b.className='opt';b.style.setProperty('--tint','var('+cat.t+')');b.setAttribute('aria-label',c.w);
-    b.appendChild(picNode(c));b.addEventListener('click',()=>choose(c,b));g.appendChild(b);
+    b.appendChild(picNode(c));b.addEventListener('pointerdown',e=>{e.preventDefault();choose(c,b)});b.addEventListener('click',e=>{if(e.detail===0)choose(c,b)});g.appendChild(b);
   });
   qAsk();
 }
@@ -564,6 +607,9 @@ function seg(id,key){
   return paint;
 }
 const paintRate=seg('#segRate','rate'),paintWait=seg('#segWait','wait'),paintRest=seg('#segRest','rest');
+const segTheme=$('#segTheme');
+function paintTheme(){segTheme.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.theme)))}
+segTheme.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{S.theme=b.dataset.v;persist();applyTheme();paintTheme()}));
 $('#chAuto').addEventListener('change',e=>{S.auto=e.target.checked;persist()});
 function paintVoice(){
   const list=viVoices(),info=$('#voiceInfo'),fld=$('#voiceFld'),sel=$('#voiceSel');
@@ -587,7 +633,7 @@ function paintCardTools(){
 }
 function openSheet(){
   stopAll();
-  paintRate();paintWait();paintRest();$('#chAuto').checked=S.auto;paintVoice();paintCardTools();say('');
+  paintTheme();paintRate();paintWait();paintRest();$('#chAuto').checked=S.auto;paintVoice();paintCardTools();say('');
   sheet.hidden=false;
 }
 function closeSheet(){
